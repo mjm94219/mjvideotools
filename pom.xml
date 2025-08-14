@@ -110,7 +110,6 @@
                             <descriptors>
                                 <descriptor>${distribution.descriptor}</descriptor>
                             </descriptors>
-                            <appendAssemblyId>false</appendAssemblyId>
                         </configuration>
                     </execution>
                 </executions>
@@ -167,12 +166,6 @@
         <!-- =================================== -->
         <profile>
             <id>windows</id>
-            <activation>
-                <activeByDefault>true</activeByDefault>
-                <os>
-                    <family>windows</family>
-                </os>
-            </activation>
             <properties>
                 <distribution.descriptor>src/main/assembly/windows-distribution.xml</distribution.descriptor>
             </properties>
@@ -195,28 +188,23 @@
                                         <unzip src="${project.basedir}/packaging/jre-windows.zip"
                                                dest="${project.build.directory}/jre-temp"/>
 
-                                        <mkdir dir="${project.build.directory}/jre"/>
+                                        <!--
+                                        ====== THIS IS THE KEY FIX ======
+                                        1. Find the single directory inside 'jre-temp' (e.g., 'jre-windows').
+                                        2. Move and rename that directory to be 'target/jre'.
+                                        This is much simpler and more robust than the old copy/mapper logic.
+                                        -->
+                                        <pathconvert property="jre.unzipped.dir" setonempty="false">
+                                            <first>
+                                                <dirset dir="${project.build.directory}/jre-temp" includes="*"/>
+                                            </first>
+                                        </pathconvert>
+                                        <!--suppress UnresolvedMavenProperty -->
+                                        <move file="${jre.unzipped.dir}" tofile="${project.build.directory}/jre"/>
 
-                                        <echo message="Copying JRE contents (flattening structure)..."/>
-
-                                        <!-- Copy contents of inner folder (e.g. jre-windows/) to jre/, skipping the wrapper -->
-                                        <copy todir="${project.build.directory}/jre" failonerror="false">
-                                            <fileset dir="${project.build.directory}/jre-temp">
-                                                <include name="[^/\\]+[/\\]**"/>
-                                            </fileset>
-                                            <mapper type="regexp" from="[^/\\]+[/\\](.*)" to="\1"/>
-                                        </copy>
-
-                                        <!-- Fallback: If no wrapper folder, copy all files directly -->
-                                        <copy todir="${project.build.directory}/jre" failonerror="false">
-                                            <fileset dir="${project.build.directory}/jre-temp">
-                                                <include name="**/*"/>
-                                                <exclude name="[^/\\]+[/\\]**"/>
-                                            </fileset>
-                                        </copy>
-
-                                        <!-- Clean up temp -->
+                                        <!-- Clean up the now-empty temp folder -->
                                         <delete dir="${project.build.directory}/jre-temp" failonerror="true"/>
+
 
                                         <echo message="Copying Windows library files to target/library"/>
                                         <copy todir="${project.build.directory}/library">
@@ -236,12 +224,6 @@
         <!-- =================================== -->
         <profile>
             <id>linux</id>
-            <activation>
-                <os>
-                    <family>unix</family>
-                    <name>linux</name>
-                </os>
-            </activation>
             <properties>
                 <distribution.descriptor>src/main/assembly/linux-distribution.xml</distribution.descriptor>
             </properties>
@@ -263,31 +245,19 @@
                                         <echo message="Unpacking Linux JRE..."/>
                                         <gunzip src="${project.basedir}/packaging/jre-linux.tar.gz"
                                                 dest="${project.build.directory}/jre-linux.tar"/>
+
+                                        <!--
+                                        ====== THIS IS THE KEY FIX FOR LINUX ======
+                                        The Linux JRE archive is 'flat' (no wrapper directory).
+                                        1. Unpack it into a temporary directory called 'jre-temp'.
+                                        2. Move/rename the entire 'jre-temp' directory to be 'jre'.
+                                        -->
                                         <untar src="${project.build.directory}/jre-linux.tar"
                                                dest="${project.build.directory}/jre-temp"/>
+                                        <move file="${project.build.directory}/jre-temp"
+                                              tofile="${project.build.directory}/jre"/>
 
-                                        <mkdir dir="${project.build.directory}/jre"/>
-
-                                        <echo message="Copying JRE contents (flattening structure)..."/>
-
-                                        <!-- Copy contents of inner folder (e.g. jdk-21/) to jre/, skipping wrapper -->
-                                        <copy todir="${project.build.directory}/jre" failonerror="false">
-                                            <fileset dir="${project.build.directory}/jre-temp">
-                                                <include name="[^/\\]+[/\\]**"/>
-                                            </fileset>
-                                            <mapper type="regexp" from="[^/\\]+[/\\](.*)" to="\1"/>
-                                        </copy>
-
-                                        <!-- Fallback: copy directly if no wrapper -->
-                                        <copy todir="${project.build.directory}/jre" failonerror="false">
-                                            <fileset dir="${project.build.directory}/jre-temp">
-                                                <include name="**/*"/>
-                                                <exclude name="[^/\\]+[/\\]**"/>
-                                            </fileset>
-                                        </copy>
-
-                                        <!-- Clean up -->
-                                        <delete dir="${project.build.directory}/jre-temp" failonerror="true"/>
+                                        <!-- Clean up the intermediate .tar file -->
                                         <delete file="${project.build.directory}/jre-linux.tar" failonerror="true"/>
 
                                         <echo message="Copying Linux library files to target/library"/>
