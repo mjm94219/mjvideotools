@@ -1,0 +1,48 @@
+<assembly xmlns="http://maven.apache.org/ASSEMBLY/2.1.1"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://maven.apache.org/ASSEMBLY/2.1.1 http://maven.apache.org/xsd/assembly-2.1.1.xsd">
+    <id>windows</id>
+    <formats>
+        <format>zip</format>
+    </formats>
+    <!-- This creates a root folder in the zip, e.g., mjvideotools-1.0-SNAPSHOT/ -->
+    <includeBaseDirectory>true</includeBaseDirectory>
+
+    <files>
+        <!--
+        THIS IS THE KEY PART: Include the generated .exe file.
+        It takes the .exe from the target directory and puts it in the root of the zip.
+        -->
+        <file>
+            <source>${project.build.directory}/${project.artifactId}.exe</source>
+            <outputDirectory>/</outputDirectory>
+            <filtered>false</filtered>
+        </file>
+    </files>
+
+    <fileSets>
+        <!-- Include the JRE that was unpacked by the antrun plugin -->
+        <fileSet>
+            <directory>${project.build.directory}/jre</directory>
+            <outputDirectory>jre</outputDirectory>
+            <filtered>false</filtered>
+        </fileSet>
+
+        <!-- Include the library files that were copied by the antrun plugin -->
+        <fileSet>
+            <directory>${project.build.directory}/library</directory>
+            <outputDirectory>library</outputDirectory>
+            <filtered>false</filtered>
+        </fileSet>
+
+        <!-- You can also include other files like README, LICENSE, etc. -->
+        <fileSet>
+            <directory>${project.basedir}</directory>
+            <outputDirectory>/</outputDirectory>
+            <includes>
+                <include>README.md</include>
+                <include>LICENSE</include>
+            </includes>
+        </fileSet>
+    </fileSets>
+</assembly>

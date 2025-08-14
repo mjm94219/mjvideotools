@@ -1,0 +1,309 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>org.mohansworld</groupId>
+    <artifactId>mjvideotools</artifactId>
+    <version>1.0-SNAPSHOT</version>
+
+    <name>MJ Video Tools</name>
+
+    <properties>
+        <maven.compiler.source>21</maven.compiler.source>
+        <maven.compiler.target>21</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <launch4j.plugin.version>2.5.0</launch4j.plugin.version>
+        <!-- This property will be set by profiles -->
+        <distribution.descriptor/>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.formdev</groupId>
+            <artifactId>flatlaf</artifactId>
+            <version>3.4.1</version>
+        </dependency>
+        <dependency>
+            <groupId>com.formdev</groupId>
+            <artifactId>flatlaf-intellij-themes</artifactId>
+            <version>3.4.1</version>
+        </dependency>
+        <dependency>
+            <groupId>com.miglayout</groupId>
+            <artifactId>miglayout-swing</artifactId>
+            <version>11.4</version>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter</artifactId>
+            <version>5.10.0</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-core</artifactId>
+            <version>5.12.0</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-junit-jupiter</artifactId>
+            <version>5.12.0</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.json</groupId>
+            <artifactId>json</artifactId>
+            <version>20240303</version>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <!-- Compiler Plugin -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.13.0</version>
+                <configuration>
+                    <source>${maven.compiler.source}</source>
+                    <target>${maven.compiler.target}</target>
+                </configuration>
+            </plugin>
+
+            <!-- Assembly Plugin: Fat JAR + Distribution ZIP -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <version>3.7.1</version>
+                <executions>
+                    <!-- Execution 1: Create fat JAR during 'package' phase -->
+                    <execution>
+                        <id>make-fat-jar</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                        <configuration>
+                            <archive>
+                                <manifest>
+                                    <mainClass>org.mohansworld.videotools.MainApp</mainClass>
+                                </manifest>
+                            </archive>
+                            <descriptorRefs>
+                                <descriptorRef>jar-with-dependencies</descriptorRef>
+                            </descriptorRefs>
+                            <finalName>${project.artifactId}-${project.version}</finalName>
+                            <appendAssemblyId>true</appendAssemblyId>
+                        </configuration>
+                    </execution>
+                    <!-- Execution 2: Create distribution ZIP during 'verify' phase -->
+                    <execution>
+                        <id>make-distribution</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                        <configuration>
+                            <descriptors>
+                                <descriptor>${distribution.descriptor}</descriptor>
+                            </descriptors>
+                            <appendAssemblyId>false</appendAssemblyId>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!-- Launch4j: Create .exe for Windows -->
+            <plugin>
+                <groupId>com.akathist.maven.plugins.launch4j</groupId>
+                <artifactId>launch4j-maven-plugin</artifactId>
+                <version>${launch4j.plugin.version}</version>
+                <executions>
+                    <execution>
+                        <id>l4j-clui</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>launch4j</goal>
+                        </goals>
+                        <configuration>
+                            <headerType>gui</headerType>
+                            <jar>${project.build.directory}/${project.artifactId}-${project.version}-jar-with-dependencies.jar</jar>
+                            <outfile>${project.build.directory}/${project.artifactId}.exe</outfile>
+                            <errTitle>${project.name}</errTitle>
+                            <classPath>
+                                <mainClass>org.mohansworld.videotools.MainApp</mainClass>
+                            </classPath>
+                            <jre>
+                                <path>./jre</path>
+                                <runtimeBits>64</runtimeBits>
+                                <opts>
+                                    <opt>-Dfile.encoding=UTF-8</opt>
+                                </opts>
+                            </jre>
+                            <versionInfo>
+                                <fileVersion>1.0.0.0</fileVersion>
+                                <txtFileVersion>${project.version}</txtFileVersion>
+                                <fileDescription>${project.name}</fileDescription>
+                                <copyright>2024 Your Name</copyright>
+                                <productVersion>1.0.0.0</productVersion>
+                                <txtProductVersion>${project.version}</txtProductVersion>
+                                <productName>${project.name}</productName>
+                                <internalName>${project.artifactId}</internalName>
+                                <originalFilename>${project.artifactId}.exe</originalFilename>
+                            </versionInfo>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
+    <profiles>
+        <!-- =================================== -->
+        <!-- ==         WINDOWS PROFILE       == -->
+        <!-- =================================== -->
+        <profile>
+            <id>windows</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+                <os>
+                    <family>windows</family>
+                </os>
+            </activation>
+            <properties>
+                <distribution.descriptor>src/main/assembly/windows-distribution.xml</distribution.descriptor>
+            </properties>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-antrun-plugin</artifactId>
+                        <version>3.1.0</version>
+                        <executions>
+                            <execution>
+                                <id>prepare-package-files</id>
+                                <phase>prepare-package</phase>
+                                <goals>
+                                    <goal>run</goal>
+                                </goals>
+                                <configuration>
+                                    <target>
+                                        <echo message="Unpacking Windows JRE..."/>
+                                        <unzip src="${project.basedir}/packaging/jre-windows.zip"
+                                               dest="${project.build.directory}/jre-temp"/>
+
+                                        <mkdir dir="${project.build.directory}/jre"/>
+
+                                        <echo message="Copying JRE contents (flattening structure)..."/>
+
+                                        <!-- Copy contents of inner folder (e.g. jre-windows/) to jre/, skipping the wrapper -->
+                                        <copy todir="${project.build.directory}/jre" failonerror="false">
+                                            <fileset dir="${project.build.directory}/jre-temp">
+                                                <include name="[^/\\]+[/\\]**"/>
+                                            </fileset>
+                                            <mapper type="regexp" from="[^/\\]+[/\\](.*)" to="\1"/>
+                                        </copy>
+
+                                        <!-- Fallback: If no wrapper folder, copy all files directly -->
+                                        <copy todir="${project.build.directory}/jre" failonerror="false">
+                                            <fileset dir="${project.build.directory}/jre-temp">
+                                                <include name="**/*"/>
+                                                <exclude name="[^/\\]+[/\\]**"/>
+                                            </fileset>
+                                        </copy>
+
+                                        <!-- Clean up temp -->
+                                        <delete dir="${project.build.directory}/jre-temp" failonerror="true"/>
+
+                                        <echo message="Copying Windows library files to target/library"/>
+                                        <copy todir="${project.build.directory}/library">
+                                            <fileset dir="${project.basedir}/packaging/library-windows"/>
+                                        </copy>
+                                    </target>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+
+        <!-- =================================== -->
+        <!-- ==         LINUX PROFILE         == -->
+        <!-- =================================== -->
+        <profile>
+            <id>linux</id>
+            <activation>
+                <os>
+                    <family>unix</family>
+                    <name>linux</name>
+                </os>
+            </activation>
+            <properties>
+                <distribution.descriptor>src/main/assembly/linux-distribution.xml</distribution.descriptor>
+            </properties>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-antrun-plugin</artifactId>
+                        <version>3.1.0</version>
+                        <executions>
+                            <execution>
+                                <id>prepare-package-files</id>
+                                <phase>prepare-package</phase>
+                                <goals>
+                                    <goal>run</goal>
+                                </goals>
+                                <configuration>
+                                    <target>
+                                        <echo message="Unpacking Linux JRE..."/>
+                                        <gunzip src="${project.basedir}/packaging/jre-linux.tar.gz"
+                                                dest="${project.build.directory}/jre-linux.tar"/>
+                                        <untar src="${project.build.directory}/jre-linux.tar"
+                                               dest="${project.build.directory}/jre-temp"/>
+
+                                        <mkdir dir="${project.build.directory}/jre"/>
+
+                                        <echo message="Copying JRE contents (flattening structure)..."/>
+
+                                        <!-- Copy contents of inner folder (e.g. jdk-21/) to jre/, skipping wrapper -->
+                                        <copy todir="${project.build.directory}/jre" failonerror="false">
+                                            <fileset dir="${project.build.directory}/jre-temp">
+                                                <include name="[^/\\]+[/\\]**"/>
+                                            </fileset>
+                                            <mapper type="regexp" from="[^/\\]+[/\\](.*)" to="\1"/>
+                                        </copy>
+
+                                        <!-- Fallback: copy directly if no wrapper -->
+                                        <copy todir="${project.build.directory}/jre" failonerror="false">
+                                            <fileset dir="${project.build.directory}/jre-temp">
+                                                <include name="**/*"/>
+                                                <exclude name="[^/\\]+[/\\]**"/>
+                                            </fileset>
+                                        </copy>
+
+                                        <!-- Clean up -->
+                                        <delete dir="${project.build.directory}/jre-temp" failonerror="true"/>
+                                        <delete file="${project.build.directory}/jre-linux.tar" failonerror="true"/>
+
+                                        <echo message="Copying Linux library files to target/library"/>
+                                        <copy todir="${project.build.directory}/library">
+                                            <fileset dir="${project.basedir}/packaging/library-linux"/>
+                                        </copy>
+
+                                        <echo message="Setting execute permissions on library files"/>
+                                        <chmod dir="${project.build.directory}/library" perm="755" includes="**/*"/>
+                                    </target>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+</project>
