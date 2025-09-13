@@ -1,0 +1,38 @@
+<assembly xmlns="http://maven.apache.org/ASSEMBLY/2.1.1"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://maven.apache.org/ASSEMBLY/2.1.1 http://maven.apache.org/xsd/assembly-2.1.1.xsd">
+    <id>linux</id>
+    <formats>
+        <format>tar.gz</format>
+    </formats>
+    <fileSets>
+        <!-- 1. The fat JAR -->
+        <fileSet>
+            <directory>${project.build.directory}</directory>
+            <outputDirectory>lib</outputDirectory>
+            <includes>
+                <include>${project.artifactId}-${project.version}-jar-with-dependencies.jar</include>
+            </includes>
+        </fileSet>
+        <!-- 2. The bundled JRE -->
+        <fileSet>
+            <directory>${project.build.directory}/jre</directory>
+            <outputDirectory>jre</outputDirectory>
+        </fileSet>
+        <!-- 3. The platform-specific, executable library files -->
+        <fileSet>
+            <directory>${project.basedir}/packaging/library-linux</directory>
+            <outputDirectory>library</outputDirectory>
+            <fileMode>0755</fileMode> <!-- Make files executable -->
+        </fileSet>
+        <!-- 4. The main launcher script -->
+        <fileSet>
+            <directory>${project.basedir}/packaging</directory>
+            <outputDirectory>/</outputDirectory>
+            <includes>
+                <include>mjvideotools.sh</include>
+            </includes>
+            <fileMode>0755</fileMode> <!-- Make script executable -->
+        </fileSet>
+    </fileSets>
+</assembly>
