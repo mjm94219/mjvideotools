@@ -2,6 +2,7 @@ package org.mohansworld.videotools.presentation;
 
 import net.miginfocom.swing.MigLayout;
 import org.mohansworld.videotools.application.FfVideoProcessor;
+import org.mohansworld.videotools.application.FileUtils;
 import org.mohansworld.videotools.application.ProgressListener;
 import org.mohansworld.videotools.application.SubtitleExtractor;
 
@@ -135,7 +136,7 @@ public class SubtitleExtractPanel extends JPanel {
     private void chooseInputFile() {
         // Lazily initialize the file chooser for better startup performance
         if (fileChooser == null) {
-            fileChooser = new JFileChooser();
+            fileChooser = FileUtils.getFileChooser();
             fileChooser.setDialogTitle(FILE_CHOOSER_TITLE);
             fileChooser.setFileFilter(new FileNameExtensionFilter(FILE_CHOOSER_FILTER_DESC, "mp4", "mkv", "mov"));
         }

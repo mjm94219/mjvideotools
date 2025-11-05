@@ -5,6 +5,7 @@ import org.mohansworld.videotools.MainApp;
 import java.io.File;
 import java.net.URISyntaxException;
 import java.nio.file.Path;
+import javax.swing.JFileChooser;
 
 /**
  * A utility class providing helper methods for the application.
@@ -182,5 +183,23 @@ public final class FileUtils {
 
         // 3. If no dot is found, return the original filename as a fallback
         return filename;
+    }
+
+    /**
+     * Gets the user's Videos directory
+     *
+     * @return JFileChooser.
+     */
+    public static JFileChooser getFileChooser() {
+        JFileChooser fileChooser = new JFileChooser();
+        String userHome = System.getProperty("user.home");
+        File videosDir = new File(userHome, "Videos");
+
+        // Set the initial directory for the file chooser if the Videos folder exists
+        if (videosDir.exists() && videosDir.isDirectory()) {
+            fileChooser.setCurrentDirectory(videosDir);
+        }
+
+        return fileChooser;
     }
 }

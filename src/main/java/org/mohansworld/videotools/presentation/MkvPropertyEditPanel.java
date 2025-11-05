@@ -1,6 +1,7 @@
 package org.mohansworld.videotools.presentation;
 
 import net.miginfocom.swing.MigLayout;
+import org.mohansworld.videotools.application.FileUtils;
 import org.mohansworld.videotools.application.MkvPropertyEditor;
 import org.mohansworld.videotools.application.ProgressListener;
 import org.mohansworld.videotools.domain.MkvPropertyInfo;
@@ -181,7 +182,7 @@ public class MkvPropertyEditPanel extends JPanel {
      * Opens a file chooser to select an MKV file and triggers loading its properties.
      */
     private void chooseFile() {
-        final JFileChooser fileChooser = new JFileChooser();
+        final JFileChooser fileChooser = FileUtils.getFileChooser();
         fileChooser.setFileFilter(new FileNameExtensionFilter("MKV Videos", "mkv"));
         if (fileChooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
             inputFileField.setText(fileChooser.getSelectedFile().getAbsolutePath());

@@ -1,6 +1,7 @@
 package org.mohansworld.videotools.presentation;
 
 import net.miginfocom.swing.MigLayout;
+import org.mohansworld.videotools.application.FileUtils;
 import org.mohansworld.videotools.application.MkvPropertyEditor;
 import org.mohansworld.videotools.application.MkvTrackRemover;
 import org.mohansworld.videotools.application.ProgressListener;
@@ -182,7 +183,7 @@ public class MkvTrackRemovePanel extends JPanel {
      */
     private JFileChooser getMkvFileChooser() {
         if (mkvFileChooser == null) {
-            mkvFileChooser = new JFileChooser();
+            mkvFileChooser = FileUtils.getFileChooser();
             mkvFileChooser.setFileFilter(new FileNameExtensionFilter("MKV Videos", "mkv"));
         }
         return mkvFileChooser;

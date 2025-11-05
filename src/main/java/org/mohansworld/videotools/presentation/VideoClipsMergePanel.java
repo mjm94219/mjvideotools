@@ -178,7 +178,7 @@ public class VideoClipsMergePanel extends JPanel {
      * @param e The action event (unused).
      */
     private void addFiles(ActionEvent e) {
-        final JFileChooser chooser = new JFileChooser();
+        final JFileChooser chooser = FileUtils.getFileChooser();
         chooser.setMultiSelectionEnabled(true);
         chooser.setFileFilter(new FileNameExtensionFilter("Video Files", "mp4", "mkv", "mov"));
 
@@ -281,7 +281,7 @@ public class VideoClipsMergePanel extends JPanel {
      * @param e The action event (unused).
      */
     private void browseForOutput(ActionEvent e) {
-        final JFileChooser chooser = new JFileChooser();
+        final JFileChooser chooser = FileUtils.getFileChooser();
         chooser.setDialogTitle("Save Merged Video As...");
         chooser.setSelectedFile(new File(outputField.getText())); // Pre-populate with current path
 

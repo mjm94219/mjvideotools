@@ -2,6 +2,7 @@ package org.mohansworld.videotools.presentation;
 
 import net.miginfocom.swing.MigLayout;
 import org.mohansworld.videotools.application.FfVideoProcessor;
+import org.mohansworld.videotools.application.FileUtils;
 import org.mohansworld.videotools.application.ProgressListener;
 import org.mohansworld.videotools.application.VideoConverter;
 import org.mohansworld.videotools.domain.VideoFormat;
@@ -149,7 +150,7 @@ public class VideoConvertPanel extends JPanel {
      * Opens a file chooser dialog for the user to select an input video file.
      */
     private void chooseInputFile() {
-        JFileChooser fileChooser = new JFileChooser();
+        JFileChooser fileChooser = FileUtils.getFileChooser();
         fileChooser.setFileFilter(new FileNameExtensionFilter("Video Files", "mp4", "mkv", "mov", "avi", "webm"));
         int result = fileChooser.showOpenDialog(this);
 

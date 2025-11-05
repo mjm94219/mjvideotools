@@ -2,6 +2,7 @@ package org.mohansworld.videotools.presentation;
 
 import net.miginfocom.swing.MigLayout;
 import org.mohansworld.videotools.application.FfVideoProcessor;
+import org.mohansworld.videotools.application.FileUtils;
 import org.mohansworld.videotools.application.ProgressListener;
 import org.mohansworld.videotools.application.VideoSplitter;
 
@@ -131,7 +132,7 @@ public class VideoSplitPanel extends JPanel {
      * Opens a file chooser to select a video file.
      */
     private void chooseInputFile() {
-        JFileChooser fileChooser = new JFileChooser();
+        JFileChooser fileChooser = FileUtils.getFileChooser();
         fileChooser.setFileFilter(new FileNameExtensionFilter("Video Files", VIDEO_FILE_EXTENSIONS));
         if (fileChooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
             File selectedFile = fileChooser.getSelectedFile();

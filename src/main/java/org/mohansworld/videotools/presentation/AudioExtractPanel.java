@@ -3,6 +3,7 @@ package org.mohansworld.videotools.presentation;
 import net.miginfocom.swing.MigLayout;
 import org.mohansworld.videotools.application.AudioExtractor;
 import org.mohansworld.videotools.application.FfVideoProcessor;
+import org.mohansworld.videotools.application.FileUtils;
 import org.mohansworld.videotools.application.ProgressListener;
 import org.mohansworld.videotools.domain.AudioFormat;
 
@@ -11,6 +12,7 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import java.io.File;
+
 
 /**
  * A JPanel that provides a user interface for extracting audio from a video file.
@@ -122,7 +124,7 @@ public class AudioExtractPanel extends JPanel {
      * Opens a file chooser dialog to allow the user to select an input video file.
      */
     private void chooseInputFile() {
-        JFileChooser fileChooser = new JFileChooser();
+        JFileChooser fileChooser = FileUtils.getFileChooser();
         fileChooser.setFileFilter(new FileNameExtensionFilter("Video Files", "mp4", "mkv", "mov", "avi", "webm"));
         int result = fileChooser.showOpenDialog(this);
         if (result == JFileChooser.APPROVE_OPTION) {
